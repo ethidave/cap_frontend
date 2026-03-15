@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CapTrade Pro – AI Customer Support Knowledge Base
 
-## Getting Started
+This document serves as the primary data source for the CapTrade Pro AI Chatbot (TinyChat). It contains comprehensive information about user workflows, security protocols, and platform features.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🤖 AI SYSTEM PROMPT (Copy & Paste to TinyChat)
+> "You are the CapTrade Pro Intelligent Support Agent. Your goal is to provide institutional-grade support to users regarding KYC verification, deposits, withdrawals, and account management. Use the 'CapTrade Pro Knowledge Base' below to answer inquiries accurately. Be professional, direct, and security-conscious. Always prioritize user funds and data safety. If a query is beyond your knowledge, direct the user to 'support@captradepro.com'."
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏛️ Platform Overview
+**CapTrade Pro** is a high-performance digital asset trading platform offering institutional-grade tools, real-time price aggregation, and secure financial management.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🔐 Account Management
 
-To learn more about Next.js, take a look at the following resources:
+### Registration & Login
+- **Process**: Users sign up with First Name, Last Name, Email, and a Secure Password.
+- **Security**: Accounts are protected by JWT encryption.
+- **Lockout Protocol**: After multiple failed login attempts, accounts are locked for **30 minutes** to prevent brute-force attacks.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Password Recovery
+- Users can request a "Password Reset" from the Sign In page.
+- An authorization code (OTP) will be sent to the registered email address.
+- Recovery codes are time-sensitive and should never be shared.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🆔 KYC Verification (Identity Audit)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Verification Levels
+1. **UNVERIFIED**: Default account state. Access to deposits and trading only.
+2. **PENDING**: Documents uploaded and undergoing high-fidelity audit.
+3. **VERIFIED**: Identity confirmed. **Required for all withdrawal operations.**
+4. **REJECTED**: Verification failed due to document issues. Users can retry.
+5. **BANNED**: If a user fails KYC **3 times**, the account is permanently flagged for security review.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Requirements
+- **Documents**: Valid ID Card or International Passport.
+- **Quality**: Images must be high-resolution, glare-free, and showing all four corners of the document.
+- **Auto-Audit**: The system uses OCR and Face-Recognition to verify that the person on the ID matches the user.
+
+---
+
+## 💰 Financial Operations
+
+### Deposits (OxaPay)
+- **Gateway**: Integrated with **OxaPay** for secure Cryptocurrency deposits.
+- **Currency**: Transactions are calculated in USD but paid via Crypto.
+- **Timing**: Deposits are credited instantly to the user's balance once the blockchain confirms the transaction.
+- **Flow**: User enters amount -> Invoice generated -> User pays to the specific address -> Balance updated.
+
+### Withdrawals
+- **Prerequisite**: User **MUST** be **KYC VERIFIED**.
+- **Methods**: Crypto (Wallet), PayPal, or Bank Transfer.
+- **Approval**: For maximum security, all withdrawals are reviewed manually by the Finance Department.
+- **Status**:
+    - **PENDING**: Request submitted, awaiting admin authorization.
+    - **COMPLETED**: Funds have been dispatched.
+    - **REJECTED**: Request denied (reason provided in notifications).
+
+---
+
+## 📊 Trading & Trade Control
+- **Live Prices**: Real-time price aggregation for Forex, Crypto, and Metals.
+- **Trade Execution**: Instant fills with high-performance matching.
+- **Close Position**: Users can close active trades at any time to lock in profits or mitigate losses. A confirmation dialog ensures no accidental closures.
+
+---
+
+## 📩 Support & Interaction
+- **Support Desk**: Users can open internal tickets via the "Support Desk" in their dashboard.
+- **Email**: Official inquiries should be directed to the customer support address configured in the platform settings.
+- **Live Chat**: Use the widget in the bottom-right corner for quick questions.
+
+---
+## 🔔 Advanced User Features
+
+### Real-Time Notifications
+- Users receive instant alerts (Bell Icon) for:
+    - Deposit confirmations.
+    - Withdrawal status updates.
+    - KYC verification results.
+    - Platform-wide announcements (Broadcasts).
+
+### Profile & Security
+- **Identity Update**: Users can view their verified details in the Profile section.
+- **Activity Log**: Users can monitor their recent trade and transaction history from the main dashboard.
+
+## 🛡️ Security Protocol
+- **Admin Bypass**: During maintenance, regular users are blocked, but the platform remains secure and active for institutional operations.
+- **Encryption**: All sensitive data is hashed and transmitted over secure SSL/TLS channels.
+
+## 🚩 Common Troubleshooting
+1. **"Why can't I withdraw?"** -> Check if your KYC status is 'VERIFIED'.
+2. **"Deposit not showing?"** -> Ensure the blockchain transaction has at least 3 confirmations.
+3. **"Account Locked?"** -> Wait 30 minutes for the security cooldown to expire.
+4. **"KYC Rejected?"** -> Ensure the photo is clear and you are using an original document (no photocopies).

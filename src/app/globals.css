@@ -1,26 +1,198 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --bg: #020617;
+  --neon: #00FFA3;
+  --cyan: #00F0FF;
+  --card-bg: rgba(10, 15, 30, 0.7);
+  --border: rgba(255, 255, 255, 0.06);
+  --muted: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: #f1f5f9;
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 163, 0.3);
+  border-radius: 3px;
+}
+
+/* Glass card (Removed blur) */
+.glass {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+}
+
+/* Neon glow helpers */
+.glow-green {
+  box-shadow: 0 0 20px rgba(0, 255, 163, 0.35);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+}
+
+/* Gradient text */
+.grad-text {
+  background: linear-gradient(135deg, #00FFA3 0%, #00F0FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Ticker marquee */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+/* Gradient shift for headings */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% auto;
+  animation: gradientShift 6s ease-in-out infinite;
+}
+
+/* Input focus ring */
+.input-field {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border-radius: 1rem;
+  padding: 0 1.25rem;
+  width: 100%;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.input-field::placeholder {
+  color: #475569;
+}
+
+.input-field:placeholder-shown {
+  text-overflow: ellipsis;
+}
+
+.input-field:focus {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(0, 255, 163, 0.3);
+  box-shadow: 0 0 0 4px rgba(0, 255, 163, 0.05);
+}
+
+/* Fix browser autofill yellow background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #03081c inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.input-field.with-icon-left {
+  padding-left: 3.25rem !important;
+}
+
+.input-field.with-icon-right {
+  padding-right: 3.25rem !important;
+}
+
+/* Primary solid button */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 56px;
+  padding: 0 2.5rem;
+  border-radius: 0.85rem;
+  font-weight: 750;
+  font-size: 1.05rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, #00FFA3, #00F0FF);
+  color: #020617;
+  border: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(0, 255, 163, 0.15);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 255, 163, 0.35);
+}
+
+/* Ghost button (border-only hover) */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 56px;
+  padding: 0 2.5rem;
+  border-radius: 0.85rem;
+  font-weight: 650;
+  font-size: 1rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-ghost:hover {
+  border-color: rgba(0, 255, 163, 0.5);
+  box-shadow: 0 0 16px rgba(0, 255, 163, 0.1);
+  color: #00FFA3;
+  background: rgba(0, 255, 163, 0.02);
 }
