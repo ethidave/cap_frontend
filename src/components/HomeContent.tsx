@@ -3,7 +3,7 @@ import { motion, Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import {
-    Sparkles, ArrowRight, Apple, Play, MessageCircle,
+    Sparkles, ArrowRight, MessageCircle,
     Zap, LineChart, Shield, Globe, Wallet, BarChart2,
     UserPlus, ShieldCheck, TrendingUp, Star,
 } from "lucide-react";
@@ -48,8 +48,10 @@ const testimonials = [
 export default function HomeContent() {
     const gradRef = useRef<HTMLSpanElement>(null);
     const [publicSettings, setPublicSettings] = useState<Record<string, string>>({});
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
+        setIsLoggedIn(!!localStorage.getItem("user_token"));
         async function loadSettings() {
             try {
                 const settings = await api.get("/settings/public");
@@ -104,10 +106,10 @@ export default function HomeContent() {
 
                     <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-4 sm:px-0">
                         <Link
-                            href="/signup"
+                            href={isLoggedIn ? "/dashboard" : "/signup"}
                             className="w-full sm:w-auto px-10 py-5 bg-[#00FFA3] text-[#020617] rounded-2xl font-black text-base md:text-lg hover:scale-[1.05] transition-all flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(0,255,163,0.15)] group"
                         >
-                            Get Started
+                            {isLoggedIn ? "Go to Dashboard" : "Get Started"}
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <Link
@@ -147,61 +149,7 @@ export default function HomeContent() {
                 </div>
             </section>
 
-            {/* 5. App Promo Section */}
-            <section className="relative py-16 md:py-24 overflow-hidden px-4 md:px-0">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[radial-gradient(circle_at_center,rgba(0,255,163,0.03)_0%,transparent_70%)] pointer-events-none" />
-                <div className="max-w-7xl mx-auto px-0 md:px-10 relative z-10">
-                    <div className="bg-gradient-to-br from-white/[0.05] to-transparent border border-white/10 rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-16 flex flex-col lg:flex-row items-center gap-10 md:gap-16">
-                        <div className="flex-1 space-y-6 md:space-y-8 text-center lg:text-left">
-                            <h2 className="text-3xl md:text-6xl font-black text-white leading-[0.9] md:leading-[0.95] tracking-tighter">
-                                TRADE ANYWHERE <br />
-                                <span className="text-[#00FFA3]">ANY TIME.</span>
-                            </h2>
-                            <p className="text-slate-400 text-sm md:text-lg font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
-                                Get the full power of the CapTrade Pro engine on your mobile device. Lightning-fast site speed, instant deposits, and 24/7 customer support in your pocket.
-                            </p>
-                            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                                {/* App Store Button */}
-                                <Link 
-                                    href={publicSettings.APP_STORE_LINK || "#"} 
-                                    target="_blank"
-                                    className="w-full sm:w-auto px-6 py-3 bg-black border border-white/20 hover:border-[#00FFA3] rounded-xl flex items-center gap-3 transition-all group scale-100 hover:scale-105 active:scale-95"
-                                >
-                                    <Apple className="w-8 h-8 text-white group-hover:text-[#00FFA3] transition-colors" />
-                                    <div className="text-left flex flex-col justify-center">
-                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mb-1">Download on the</span>
-                                        <span className="text-lg text-white font-black leading-tight">App Store</span>
-                                    </div>
-                                </Link>
-                                
-                                {/* Google Play Button */}
-                                <Link 
-                                    href={publicSettings.PLAY_STORE_LINK || "#"} 
-                                    target="_blank"
-                                    className="w-full sm:w-auto px-6 py-3 bg-black border border-white/20 hover:border-[#00FFA3] rounded-xl flex items-center gap-3 transition-all group scale-100 hover:scale-105 active:scale-95"
-                                >
-                                    <Play className="w-8 h-8 text-white group-hover:text-[#00FFA3] fill-current transition-colors" />
-                                    <div className="text-left flex flex-col justify-center">
-                                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mb-1">Get it on</span>
-                                        <span className="text-lg text-white font-black leading-tight">Google Play</span>
-                                    </div>
-                                </Link>
-                            </div>
-                        </div>
 
-                        {/* Amazing Mockup Image */}
-                        <div className="flex-1 relative w-full aspect-square max-w-[500px] hidden md:block">
-                            <Image
-                                src={publicSettings.MOBILE_APP_MOCKUP || "/trading_app_mockup.png"}
-                                alt="CapTrade Pro Mobile App"
-                                width={600}
-                                height={600}
-                                className="relative z-10 w-full h-full object-contain hover:scale-105 transition-transform duration-1000 p-8 mix-blend-screen"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* 6. Steps Section */}
             <section className="relative py-24 px-6 md:px-10 max-w-7xl mx-auto z-10">
@@ -270,10 +218,10 @@ export default function HomeContent() {
                     </h2>
                     <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link
-                            href="/signup"
+                            href={isLoggedIn ? "/dashboard" : "/signup"}
                             className="w-full sm:w-auto px-10 py-5 bg-[#020617] text-[#00FFA3] rounded-2xl font-black text-lg md:text-xl hover:scale-105 transition-all shadow-2xl flex items-center justify-center"
                         >
-                            Create Account
+                            {isLoggedIn ? "Go to Dashboard" : "Create Account"}
                         </Link>
                         <Link
                             href="/contact"

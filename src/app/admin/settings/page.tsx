@@ -9,7 +9,6 @@ import {
     Mail,
     Save,
     RefreshCw,
-    Smartphone,
     Server,
     Database,
     Lock,
@@ -20,7 +19,8 @@ import {
     Send,
     MessageSquare,
     CreditCard,
-    Key
+    Key,
+    ShieldCheck as ShieldIcon
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useToast } from "@/components/ToastProvider";
@@ -117,9 +117,10 @@ export default function AdminSettings() {
         { id: "general", label: "General", icon: Globe },
         { id: "email", label: "Email / SMTP", icon: Mail },
         { id: "payments", label: "Payments", icon: CreditCard },
-        { id: "google", label: "Google Auth", icon: Smartphone },
+        { id: "google", label: "Google Auth", icon: Key },
         { id: "support", label: "Support Widget", icon: MessageSquare },
         { id: "broadcast", label: "Broadcast", icon: Volume2 },
+        { id: "kyc", label: "KYC Settings", icon: Shield },
     ];
 
     return (
@@ -202,26 +203,8 @@ export default function AdminSettings() {
                                     value={settings["SITE_NAME"] || ""}
                                     onChange={(v) => setSettings(p => ({ ...p, SITE_NAME: v }))}
                                 />
-                                <InputGroup
-                                    label="Google Play Store Link"
-                                    placeholder="https://play.google.com/store/apps/details?id=..."
-                                    value={settings["PLAY_STORE_LINK"] || ""}
-                                    onChange={(v) => setSettings(p => ({ ...p, PLAY_STORE_LINK: v }))}
-                                />
-                                <InputGroup
-                                    label="Apple App Store Link"
-                                    placeholder="https://apps.apple.com/app/..."
-                                    value={settings["APP_STORE_LINK"] || ""}
-                                    onChange={(v) => setSettings(p => ({ ...p, APP_STORE_LINK: v }))}
-                                />
-                                <InputGroup
-                                    label="Mobile App Mockup Image URL"
-                                    placeholder="/trading_app_mockup.png"
-                                    value={settings["MOBILE_APP_MOCKUP"] || ""}
-                                    onChange={(v) => setSettings(p => ({ ...p, MOBILE_APP_MOCKUP: v }))}
-                                />
                                 <button
-                                    onClick={() => handleSaveSection(["SITE_NAME", "PLAY_STORE_LINK", "APP_STORE_LINK", "MOBILE_APP_MOCKUP"])}
+                                    onClick={() => handleSaveSection(["SITE_NAME"])}
                                     disabled={isSaving}
                                     className="w-full py-3 rounded-xl bg-white/[0.05] border border-white/5 text-white font-bold uppercase tracking-widest text-[10px] hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2"
                                 >
@@ -377,7 +360,7 @@ export default function AdminSettings() {
                          <div className="bg-white/[0.02] rounded-2xl border border-white/5 p-10 shadow-2xl">
                             <div className="flex items-center gap-5 mb-8 pb-6 border-b border-white/5">
                                 <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 border border-red-500/20">
-                                    <Smartphone className="w-7 h-7" />
+                                    <Key className="w-7 h-7" />
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold text-white">Google OAuth 2.0</h3>
@@ -517,6 +500,83 @@ export default function AdminSettings() {
                                 <p className="text-[10px] text-center text-slate-600 font-bold uppercase tracking-tight font-sans">
                                     Notice: This will send a notification and email to all registered users.
                                 </p>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+
+                {activeTab === "kyc" && (
+                    <motion.div
+                        key="kyc"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="max-w-2xl"
+                    >
+                        <div className="bg-white/[0.02] rounded-2xl border border-white/5 p-10 shadow-2xl">
+                            <div className="flex items-center gap-5 mb-8 pb-6 border-b border-white/5">
+                                <div className="w-14 h-14 rounded-2xl bg-[#00FFA3]/10 flex items-center justify-center text-[#00FFA3] border border-[#00FFA3]/20">
+                                    <Shield className="w-7 h-7" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-white">KYC Configuration</h3>
+                                    <p className="text-sm text-slate-500">Mobile Handoff & Security Parameters</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                <InputGroup
+                                    label="Mobile KYC Base URL"
+                                    placeholder="https://captradepro.com"
+                                    value={settings["KYC_MOBILE_URL_ROOT"] || ""}
+                                    onChange={(v) => setSettings(p => ({ ...p, KYC_MOBILE_URL_ROOT: v }))}
+                                />
+                                <div className="p-4 bg-[#00FFA3]/5 rounded-xl border border-[#00FFA3]/10">
+                                    <p className="text-[10px] text-[#00FFA3]/60 font-bold uppercase tracking-widest mb-1">Configuration Tip</p>
+                                    <p className="text-xs text-slate-400">
+                                        This URL is used to generate the QR code. Point it to your frontend domain (e.g. https://captradepro.com).
+                                        Ensure the mobile app or web view can reach this address.
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => handleSaveSection(["KYC_MOBILE_URL_ROOT"])}
+                                    disabled={isSaving}
+                                    className="w-full py-4 rounded-xl bg-[#00FFA3] text-[#020617] font-bold uppercase tracking-widest text-xs shadow-lg shadow-[#00FFA3]/20 hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                                >
+                                    {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                    Update KYC Config
+                                </button>
+                            </div>
+
+                            <div className="mt-10 pt-10 border-t border-white/5 space-y-6">
+                                <div>
+                                    <h3 className="text-white font-bold text-lg leading-tight">Storage & Privacy</h3>
+                                    <p className="text-xs text-slate-500 mt-1 uppercase tracking-widest">Manual Data Purge</p>
+                                </div>
+                                <p className="text-xs text-slate-400 leading-relaxed">
+                                    While the system automatically deletes images after processing, orphaned files may occasionally remain. Use this to permanently delete all files in the KYC uploads directory.
+                                </p>
+                                <button
+                                    onClick={async () => {
+                                        const confirmed = await confirm(
+                                            "Confirm Purge", 
+                                            "Are you sure you want to permanently delete ALL uploaded KYC images? This operation cannot be undone and will immediately reclaim server storage."
+                                        );
+                                        
+                                        if (confirmed) {
+                                            try {
+                                                const res = await api.delete("/admin/kyc/cleanup");
+                                                toast("success", "Cleanup Complete", `Successfully deleted ${res.deletedCount || 0} orphaned files.`);
+                                            } catch (e) {
+                                                toast("error", "Cleanup Failed", "Could not purge the uploads directory.");
+                                            }
+                                        }
+                                    }}
+                                    className="w-full py-4 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-500 font-bold uppercase tracking-widest text-xs hover:bg-orange-500/20 transition-all flex items-center justify-center gap-3"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                    Purge KYC Uploads Directory
+                                </button>
                             </div>
                         </div>
                     </motion.div>

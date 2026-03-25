@@ -10,8 +10,26 @@ export function MaintenanceGuard({ children }: { children: React.ReactNode }) {
         const checkStatus = async () => {
             // 1. DYNAMIC ADMIN CHECK: Check fresh values on every poll
             const adminToken = localStorage.getItem("admin_token");
+            const userToken = localStorage.getItem("user_token");
             const isAtAdminPath = pathname.startsWith("/admin");
-            const isAdmin = !!adminToken || isAtAdminPath;
+
+            // Simple JWT decoder
+            const decode = (t: string | null) => {
+                if (!t) return null;
+                try {
+                    const base64Url = t.split(".")[1];
+                    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+                    return JSON.parse(atob(base64));
+                } catch (e) { return null; }
+            }
+
+            const adminPayload = decode(adminToken);
+            const userPayload = decode(userToken);
+            
+            const isAdmin = 
+                isAtAdminPath || 
+                adminPayload?.role === 'ADMIN' || 
+                userPayload?.role === 'ADMIN';
 
             // 2. BYPASS: If admin, never apply maintenance logic
             if (isAdmin) {
@@ -24,7 +42,7 @@ export function MaintenanceGuard({ children }: { children: React.ReactNode }) {
 
             try {
                 // 3. FETCH: Check maintenance status from server
-                const res = await fetch("http://localhost:3001/maintenance-status");
+                const res = await fetch("/api/maintenance-status");
                 if (!res.ok) return;
                 const data = await res.json();
 

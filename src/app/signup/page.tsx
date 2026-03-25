@@ -221,7 +221,7 @@ export default function SignUpPage() {
 
                         <button
                             type="button"
-                            onClick={() => window.location.href = "http://localhost:3001/auth/google"}
+                            onClick={() => window.location.href = "http://localhost:3001/api/auth/google"}
                             className="w-full h-14 bg-white/[0.03] border border-white/10 hover:bg-white/[0.05] hover:border-white/20 rounded-xl flex items-center justify-center gap-3 transition-all text-white font-bold group"
                         >
                             <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">

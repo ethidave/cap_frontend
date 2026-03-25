@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     TrendingUp,
@@ -27,10 +28,15 @@ import {
 import { api } from "@/lib/api";
 import { useToast } from "@/components/ToastProvider";
 
-export default function TradeControl() {
+function TradeControlContent() {
     const { toast, confirm } = useToast();
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const userId = searchParams.get("userId");
+
     const [trades, setTrades] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState("");
     const [stats, setStats] = useState({ active: 0, totalPnl: 0 });
 
     // Modal State
@@ -50,7 +56,12 @@ export default function TradeControl() {
     const fetchTrades = async () => {
         setLoading(true);
         try {
-            const data = await api.get("/admin/trades");
+            let data;
+            if (userId) {
+                data = await api.get(`/admin/users/${userId}/trades`);
+            } else {
+                data = await api.get(`/admin/trades?search=${search}`);
+            }
             const tradesArray = Array.isArray(data) ? data : (data.data || []);
             setTrades(tradesArray);
 
@@ -67,7 +78,7 @@ export default function TradeControl() {
 
     useEffect(() => {
         fetchTrades();
-    }, []);
+    }, [userId, search]);
 
     const handleOpenEdit = (trade: any) => {
         setFormData({
@@ -114,12 +125,35 @@ export default function TradeControl() {
     return (
         <div className="space-y-8 font-sans">
             {/* Header */}
-            <div className="flex items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <h1 className="text-2xl font-bold text-white tracking-tight">
-                        Trade Hub
+                        {userId ? `User #${userId.slice(-6)}: Trades` : 'Trade Hub'}
                     </h1>
-                    <p className="text-slate-400 text-sm mt-1">Monitor and manage all user positions</p>
+                    <p className="text-slate-400 text-sm mt-1">
+                        {userId ? `Viewing all LIVE positions for this specific user` : 'Monitor and manage all LIVE user positions'}
+                    </p>
+                </div>
+                <div className="flex items-center gap-3">
+                    {userId && (
+                        <button
+                            onClick={() => router.push('/admin/trades')}
+                            className="bg-white/5 border border-white/10 hover:bg-white/10 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all uppercase"
+                        >
+                            View All Trades
+                        </button>
+                    )}
+                    {!userId && (
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                            <input
+                                placeholder="Search email..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white outline-none focus:border-[#00FFA3]/30 min-w-[200px]"
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -339,5 +373,13 @@ export default function TradeControl() {
                 )}
             </AnimatePresence>
         </div>
+    );
+}
+
+export default function TradeControl() {
+    return (
+        <Suspense fallback={<div className="p-10 text-center text-slate-500 font-bold uppercase tracking-widest">Loading Trading Hub...</div>}>
+            <TradeControlContent />
+        </Suspense>
     );
 }

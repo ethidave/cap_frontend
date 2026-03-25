@@ -51,12 +51,6 @@ export default function WithdrawPage() {
 
     return (
         <div className="flex-1 flex flex-col min-h-0 bg-[#0b0c0f]">
-            <header className="h-[60px] bg-[#111317] border-b border-[#1c1f26] flex items-center justify-between px-4 sm:px-6 shrink-0">
-                <div className="flex items-center gap-2">
-                    <ArrowUpRight className="w-5 h-5 text-red-400" />
-                    <h1 className="text-white font-bold text-base sm:text-lg">Withdraw Funds</h1>
-                </div>
-            </header>
 
             <div className="p-4 sm:p-8 overflow-y-auto custom-scrollbar flex-1">
                 <div className="max-w-4xl mx-auto space-y-8 sm:space-y-12">

@@ -1,0 +1,42 @@
+{
+  "name": "CapTrade Pro",
+  "short_name": "CapTrade",
+  "description": "Zero-commission Forex trading with spreads from 0.0 pips. Trade smarter, trade anywhere.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b0c0f",
+  "theme_color": "#00FFA3",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["finance", "trading"],
+  "icons": [
+    {
+      "src": "/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/trading_app_mockup.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "CapTrade Pro Dashboard"
+    }
+  ]
+}

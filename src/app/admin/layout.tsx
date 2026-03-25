@@ -17,7 +17,6 @@ import {
     ShieldCheck,
     Check,
     Globe,
-    Smartphone
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -29,10 +28,9 @@ const sidebarLinks = [
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/users", label: "User Management", icon: Users },
     { href: "/admin/transactions", label: "Transactions", icon: ArrowLeftRight },
-    { href: "/admin/trades", label: "Trade Control", icon: TrendingUp },
     { href: "/admin/support", label: "Support Desk", icon: LifeBuoy },
     { href: "/admin/seo", label: "SEO Master", icon: Globe },
-    { href: "/admin/notifications", label: "Mobile Push", icon: Smartphone },
+
     { href: "/admin/settings", label: "Site Settings", icon: Settings },
 ];
 

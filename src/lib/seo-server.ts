@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const BACKEND_URL = "http://localhost:3001";
+const BACKEND_URL = "http://localhost:3001/api";
 
 export async function getSeoMetadata(page: string): Promise<Metadata> {
     try {

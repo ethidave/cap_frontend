@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { Menu, ChevronDown, Bell, User as UserIcon } from "lucide-react";
+import { PWAInstallButton } from "./PWAInstallButton";
 import { useToast } from "./ToastProvider";
 import { SITE_MESSAGES } from "@/lib/messages";
 
@@ -101,20 +102,19 @@ export function DashboardHeader({
     }, [user]);
 
     return (
-        <header className="h-[60px] bg-[#111317] border-b border-[#1c1f26] flex items-center justify-between px-4 sm:px-6 z-40 shrink-0">
-            <div className="flex items-center gap-4">
-                <button onClick={toggleSidebar} className="lg:hidden text-[#a9b0c0] hover:text-white transition-colors">
+        <header className="h-[60px] bg-[#111317] border-b border-[#1c1f26] flex items-center justify-between px-2 sm:px-6 z-40 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-4">
+                <button onClick={toggleSidebar} className="lg:hidden text-[#a9b0c0] hover:text-white transition-colors p-1">
                     <Menu className="w-5 h-5" />
                 </button>
 
-                <div className="flex items-center gap-3 relative">
+                <div className="flex items-center gap-1 sm:gap-3 relative">
                     <div
                         onClick={() => setIsSymbolDropdownOpen(!isSymbolDropdownOpen)}
-                        className="flex items-center gap-2 bg-[#1c1f26] px-3 py-1.5 rounded-md border border-[#252a33] cursor-pointer hover:bg-[#252a33] transition-colors"
+                        className="flex items-center gap-1 sm:gap-2 bg-[#1c1f26] px-2 sm:px-3 py-1.5 rounded-md border border-[#252a33] cursor-pointer hover:bg-[#252a33] transition-colors"
                     >
-                        <span className="text-white font-bold text-sm tracking-tight">{selectedSymbol}</span>
-                        <span className="text-[#00FFA3] text-xs font-semibold">+4.28%</span>
-                        <ChevronDown className={`w-3 h-3 text-[#636c7a] ml-1 transition-transform ${isSymbolDropdownOpen ? 'rotate-180' : ''}`} />
+                        <span className="text-white font-bold text-[11px] sm:text-sm tracking-tight">{selectedSymbol}</span>
+                        <ChevronDown className={`w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#636c7a] ml-0.5 sm:ml-1 transition-transform ${isSymbolDropdownOpen ? 'rotate-180' : ''}`} />
                     </div>
 
                     {/* Symbol Dropdown */}
@@ -155,41 +155,8 @@ export function DashboardHeader({
                 </div>
             </div>
 
-            <div className="flex items-center gap-5">
-                <div className="flex bg-[#1c1f26] rounded-full p-1 border border-[#252a33] items-center">
-                    <button
-                        onClick={async () => {
-                            if (user?.accountType !== 'LIVE') {
-                                const confirmed = await confirm(SITE_MESSAGES.ACCOUNT.SWITCH_TITLE, SITE_MESSAGES.ACCOUNT.SWITCH_CONFIRM);
-                                if (!confirmed) return;
-                                try {
-                                    await api.patch('/auth/account-mode', {});
-                                    window.location.reload(); // Hard refresh to clear all states and re-fetch for new mode
-                                } catch (e) {
-                                    console.error("Failed to switch mode", e);
-                                }
-                            }
-                        }}
-                        className={`px-3 py-1 rounded-full text-[10px] font-black uppercase transition-all ${user?.accountType === 'LIVE' ? 'bg-[#00FFA3] text-[#0b0c0f] shadow-[0_0_10px_rgba(0,255,163,0.3)]' : 'text-[#636c7a] hover:text-white'}`}
-                    >Live</button>
-                    <button
-                        onClick={async () => {
-                            if (user?.accountType !== 'DEMO') {
-                                const confirmed = await confirm(SITE_MESSAGES.ACCOUNT.SWITCH_TITLE, SITE_MESSAGES.ACCOUNT.SWITCH_CONFIRM);
-                                if (!confirmed) return;
-                                try {
-                                    await api.patch('/auth/account-mode', {});
-                                    window.location.reload();
-                                } catch (e) {
-                                    console.error("Failed to switch mode", e);
-                                }
-                            }
-                        }}
-                        className={`px-3 py-1 rounded-full text-[10px] font-black uppercase transition-all ${user?.accountType === 'DEMO' ? 'bg-orange-500 text-white shadow-[0_0_10px_rgba(249,115,22,0.3)]' : 'text-[#636c7a] hover:text-white'}`}
-                    >Demo</button>
-                </div>
-
-                <div className="hidden sm:flex flex-col items-end mr-2 relative">
+            <div className="flex items-center gap-2 sm:gap-5">
+                <div className="hidden sm:flex flex-col items-end mr-0 relative">
                     <div
                         onClick={() => setIsCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
                         className="flex items-center gap-1 cursor-pointer hover:text-white transition-all group"
@@ -259,9 +226,12 @@ export function DashboardHeader({
                     )}
                 </button>
 
+                {/* PWA Install Button — works on all platforms */}
+                <PWAInstallButton />
+
                 <div
                     onClick={() => router.push('/dashboard/settings')}
-                    className="w-8 h-8 rounded-full bg-[#1c1f26] flex items-center justify-center cursor-pointer border border-[#252a33] hover:border-[#636c7a] transition-all mr-2 sm:mr-0"
+                    className="w-8 h-8 rounded-full bg-[#1c1f26] flex items-center justify-center cursor-pointer border border-[#252a33] hover:border-[#636c7a] transition-all mr-6 sm:mr-0"
                 >
                     <UserIcon className="w-4 h-4 text-[#a9b0c0]" />
                 </div>

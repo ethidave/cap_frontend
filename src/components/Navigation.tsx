@@ -3,8 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { TrendingUp, ArrowRight, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { PWAInstallButton } from "./PWAInstallButton";
 
 const links = [
     { href: "/", label: "Home" },
@@ -16,6 +17,11 @@ const links = [
 export function Navigation() {
     const pathname = usePathname();
     const [open, setOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        setIsLoggedIn(!!localStorage.getItem("user_token"));
+    }, []);
 
     return (
         <motion.nav
@@ -48,15 +54,26 @@ export function Navigation() {
             </div>
 
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-5">
-                <Link href="/signin" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
-                    Sign In
-                </Link>
-                <Link href="/signup"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-[#020617] bg-gradient-to-r from-[#00FFA3] to-[#00F0FF] hover:shadow-[0_0_20px_rgba(0,255,163,0.45)] transition-shadow"
-                >
-                    Get Started <ArrowRight className="w-4 h-4" />
-                </Link>
+            <div className="hidden md:flex items-center gap-4">
+                <PWAInstallButton />
+                {isLoggedIn ? (
+                    <Link href="/dashboard"
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold text-[#020617] bg-[#00FFA3] hover:shadow-[0_0_20px_rgba(0,255,163,0.45)] transition-shadow"
+                    >
+                        Dashboard
+                    </Link>
+                ) : (
+                    <>
+                        <Link href="/signin" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
+                            Sign In
+                        </Link>
+                        <Link href="/signup"
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-[#020617] bg-gradient-to-r from-[#00FFA3] to-[#00F0FF] hover:shadow-[0_0_20px_rgba(0,255,163,0.45)] transition-shadow"
+                        >
+                            Get Started <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </>
+                )}
             </div>
 
             {/* Mobile toggle */}
@@ -107,20 +124,36 @@ export function Navigation() {
                     animate={{ opacity: open ? 1 : 0, y: open ? 0 : 10 }}
                     transition={{ delay: 0.3 }}
                 >
-                    <Link
-                        href="/signin"
-                        onClick={() => setOpen(false)}
-                        className="w-full py-4 text-center text-white border border-white/10 rounded-2xl font-bold uppercase tracking-widest text-xs"
-                    >
-                        Sign In
-                    </Link>
-                    <Link
-                        href="/signup"
-                        onClick={() => setOpen(false)}
-                        className="w-full py-4 text-center bg-[#00FFA3] text-[#020617] rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-[#00FFA3]/20"
-                    >
-                        Get Started
-                    </Link>
+                    {/* PWA Install in mobile menu — no login needed */}
+                    <div className="flex justify-center">
+                        <PWAInstallButton />
+                    </div>
+                    {isLoggedIn ? (
+                        <Link
+                            href="/dashboard"
+                            onClick={() => setOpen(false)}
+                            className="w-full py-4 text-center bg-[#00FFA3] text-[#020617] rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-[#00FFA3]/20"
+                        >
+                            Dashboard
+                        </Link>
+                    ) : (
+                        <>
+                            <Link
+                                href="/signin"
+                                onClick={() => setOpen(false)}
+                                className="w-full py-4 text-center text-white border border-white/10 rounded-2xl font-bold uppercase tracking-widest text-xs"
+                            >
+                                Sign In
+                            </Link>
+                            <Link
+                                href="/signup"
+                                onClick={() => setOpen(false)}
+                                className="w-full py-4 text-center bg-[#00FFA3] text-[#020617] rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-[#00FFA3]/20"
+                            >
+                                Get Started
+                            </Link>
+                        </>
+                    )}
                 </motion.div>
             </motion.div>
         </motion.nav>

@@ -35,20 +35,6 @@ export default function HistoryPage() {
 
     return (
         <div className="flex-1 flex flex-col min-h-0">
-            <header className="h-[60px] bg-[#111317] border-b border-[#1c1f26] flex items-center justify-between px-4 sm:px-6 shrink-0">
-                <div className="flex items-center gap-2">
-                    <History className="w-5 h-5 text-[#00FFA3]" />
-                    <h1 className="text-white font-bold text-base sm:text-lg">History</h1>
-                </div>
-                <div className="flex items-center gap-3">
-                    <div className="hidden sm:flex items-center gap-6 mr-4 text-right">
-                        <div className="flex flex-col">
-                            <span className="text-[10px] uppercase font-bold text-[#636c7a] tracking-wider">Balance</span>
-                            <span className="text-white font-semibold text-sm">{user?.balance?.toLocaleString() || '0.00'} USD</span>
-                        </div>
-                    </div>
-                </div>
-            </header>
 
             <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-[#0b0c0f]">
                 <div className="max-w-6xl mx-auto space-y-6">

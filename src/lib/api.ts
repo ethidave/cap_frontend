@@ -1,16 +1,16 @@
 "use client";
 
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
 export const api = {
     async request(endpoint: string, options: RequestInit = {}) {
-        const isAdminPath = window.location.pathname.startsWith('/admin');
-        const isCallingAdminEndpoint = endpoint.startsWith('/admin');
-        const tokenKey = (isAdminPath || isCallingAdminEndpoint) ? "admin_token" : "user_token";
-        const token = localStorage.getItem(tokenKey);
+        const adminToken = typeof window !== 'undefined' ? localStorage.getItem("admin_token") : null;
+        const userToken = typeof window !== 'undefined' ? localStorage.getItem("user_token") : null;
+        const token = adminToken || userToken;
+        const tokenKey = adminToken ? "admin_token" : "user_token";
 
         const headers: HeadersInit = {
-            "Content-Type": "application/json",
+            ...(options.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
             "Accept": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...options.headers,
@@ -31,20 +31,11 @@ export const api = {
         }
 
         if (!res.ok) {
-            if (res.status === 401 && !endpoint.includes('/login') && !endpoint.includes('/signup') && !endpoint.includes('/otp')) {
-                localStorage.removeItem(tokenKey);
-                const redirectPath = window.location.pathname.startsWith('/admin') ? "/admin/login" : "/signin";
-                window.location.href = redirectPath;
-            }
-            if (res.status === 503) {
-                const isAdminRequest = 
-                    endpoint.includes('admin') || 
-                    window.location.pathname.includes('/admin') ||
-                    localStorage.getItem('admin_token');
-                
-                if (!isAdminRequest) {
-                    window.location.href = "/maintenance";
-                    return; // Stop execution
+            if (res.status === 401 && !endpoint.includes('/login') && !endpoint.includes('/signup') && !endpoint.includes('/otp') && !endpoint.includes('/mobile')) {
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem(tokenKey);
+                    const redirectPath = window.location.pathname.startsWith('/admin') ? "/admin/login" : "/signin";
+                    window.location.href = redirectPath;
                 }
             }
             throw new Error(data.message || data.error || `Request failed with status ${res.status}`);
@@ -61,6 +52,13 @@ export const api = {
         return this.request(endpoint, {
             method: "POST",
             body: JSON.stringify(body),
+        });
+    },
+
+    postMultipart(endpoint: string, formData: FormData) {
+        return this.request(endpoint, {
+            method: "POST",
+            body: formData,
         });
     },
 

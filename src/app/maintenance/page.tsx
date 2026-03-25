@@ -13,7 +13,7 @@ export default function MaintenancePage() {
     useEffect(() => {
         const checkStatus = async () => {
             try {
-                const res = await fetch("http://localhost:3001/maintenance-status");
+                const res = await fetch("/api/maintenance-status");
                 const data = await res.json();
 
                 if (data.estimatedEnd) {
@@ -43,7 +43,7 @@ export default function MaintenancePage() {
         setRetryStatus('idle');
 
         try {
-            const res = await fetch("http://localhost:3001/maintenance-status");
+            const res = await fetch("/api/maintenance-status");
             const data = await res.json();
 
             if (!data.maintenance) {
@@ -165,9 +165,6 @@ export default function MaintenancePage() {
                         </span>
                     </button>
 
-                    <Link href="/admin/login" className="flex items-center gap-2 text-slate-500 hover:text-[#00FFA3] transition-all text-[10px] font-black uppercase tracking-widest group">
-                        Administrative Access <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                    </Link>
                 </motion.div>
 
                 {/* Bottom Status */}

@@ -9,25 +9,31 @@ import {
 } from "lucide-react";
 import { useToast } from "./ToastProvider";
 import { SITE_MESSAGES } from "@/lib/messages";
+import { useDashboard } from "@/contexts/DashboardContext";
 
 export function DashboardSidebar({ sidebarOpen, toggleSidebar, user, isCollapsed, onCollapse, equity, currencies = [] }: { sidebarOpen: boolean, toggleSidebar: () => void, user: any, isCollapsed?: boolean, onCollapse?: () => void, equity?: number, currencies?: any[] }) {
     const { confirm } = useToast();
+    const { toggleAccountType } = useDashboard();
     const currentCurrency = currencies.find(c => c.symbol === (user?.currency || 'USD')) || { symbol: 'USD', rate: 1.0 };
     const pathname = usePathname();
     const router = useRouter();
 
     const NavItem = ({ icon, label, active, href }: any) => (
-        <Link href={href} className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-all ${active ? 'bg-[#00FFA3]/10 text-[#00FFA3]' : 'text-[#a9b0c0] hover:bg-[#1c1f26] hover:text-white'} ${isCollapsed ? 'justify-center px-0' : ''}`}>
+        <Link 
+            href={href} 
+            onClick={() => { if (sidebarOpen && window.innerWidth < 1024) toggleSidebar(); }}
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-all ${active ? 'bg-[#00FFA3]/10 text-[#00FFA3]' : 'text-[#a9b0c0] hover:bg-[#1c1f26] hover:text-white'} ${isCollapsed ? 'justify-center px-0' : ''}`}
+        >
             <div className={`${active ? 'text-[#00FFA3]' : 'text-[#a9b0c0]'} ${isCollapsed ? 'scale-110' : ''}`}>{icon}</div>
             {!isCollapsed && <span className="flex-1 truncate">{label}</span>}
         </Link>
     );
 
     return (
-        <aside className={`fixed inset-y-0 left-0 z-50 bg-[#111317] border-r border-[#1c1f26] transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} ${isCollapsed ? 'w-20' : 'w-64'} transition-all duration-300 flex flex-col pt-[60px] lg:pt-0`}>
+        <aside className={`fixed inset-y-0 left-0 z-[100] bg-[#111317] border-r border-[#1c1f26] transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} ${isCollapsed ? 'w-20' : 'w-64'} transition-all duration-300 flex flex-col`}>
 
             {/* Logo Section */}
-            <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} h-[60px] px-6 border-b border-[#1c1f26]`}>
+            <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} h-[70px] px-6 border-b border-[#1c1f26]`}>
                 {!isCollapsed && (
                     <div className="flex items-center gap-2 relative h-full w-full py-3">
                         <Image
@@ -52,11 +58,28 @@ export function DashboardSidebar({ sidebarOpen, toggleSidebar, user, isCollapsed
                 </button>
             </div>
 
-            {/* Mobile Balance Section */}
+            {/* Balanced Account Section */}
             {!isCollapsed && (
-                <div className="lg:hidden px-6 py-4 border-b border-[#1c1f26] bg-[#16191e]/30">
+                <div className="px-6 py-4 border-b border-[#1c1f26] bg-[#16191e]/30">
+
+                    {/* Account Type Toggle */}
+                    <div className="flex bg-[#0b0c0f] p-1 rounded-xl border border-[#1c1f26] mb-4">
+                        <button
+                            onClick={() => user?.accountType !== 'REAL' && toggleAccountType()}
+                            className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all ${user?.accountType === 'REAL' ? 'bg-[#00FFA3] text-[#020617] shadow-[0_0_15px_rgba(0,255,163,0.3)]' : 'text-slate-500 hover:text-white'}`}
+                        >
+                            Real
+                        </button>
+                        <button
+                            onClick={() => user?.accountType !== 'DEMO' && toggleAccountType()}
+                            className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all ${user?.accountType === 'DEMO' ? 'bg-[#00FFA3] text-[#020617] shadow-[0_0_15px_rgba(0,255,163,0.3)]' : 'text-slate-500 hover:text-white'}`}
+                        >
+                            Demo
+                        </button>
+                    </div>
+
                     <div className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-1">
-                        {user?.accountType === 'DEMO' ? `Demo (${currentCurrency.symbol})` : `Wallet (${currentCurrency.symbol})`}
+                        {user?.accountType === 'DEMO' ? `Demo Balance (${currentCurrency.symbol})` : `Wallet Balance (${currentCurrency.symbol})`}
                     </div>
                     <div className={`text-xl font-black tracking-tight tabular-nums ${(equity ?? 0) >= (user?.accountType === 'DEMO' ? user?.demoBalance : user?.balance) ? 'text-[#00FFA3]' : 'text-[#f6465d]'}`}>
                         {(() => {
@@ -91,7 +114,10 @@ export function DashboardSidebar({ sidebarOpen, toggleSidebar, user, isCollapsed
             <div className="flex-1 overflow-y-auto py-5 custom-scrollbar">
                 <div className="px-5 mb-5 space-y-3">
                     <button
-                        onClick={() => router.push('/dashboard/deposit')}
+                        onClick={() => {
+                            if (sidebarOpen && window.innerWidth < 1024) toggleSidebar();
+                            router.push('/dashboard/deposit');
+                        }}
                         className={`flex items-center gap-3 w-full bg-[#1c1f26] hover:bg-[#252a33] text-white px-4 py-2.5 rounded-lg font-semibold text-sm transition-all border border-transparent hover:border-[#2a2f3a] ${isCollapsed ? 'justify-center px-0' : ''}`}
                     >
                         <div className="w-6 h-6 rounded-full bg-[#00FFA3]/20 text-[#00FFA3] flex items-center justify-center text-xs shrink-0">
@@ -101,7 +127,10 @@ export function DashboardSidebar({ sidebarOpen, toggleSidebar, user, isCollapsed
                     </button>
 
                     <button
-                        onClick={() => router.push('/dashboard/withdraw')}
+                        onClick={() => {
+                            if (sidebarOpen && window.innerWidth < 1024) toggleSidebar();
+                            router.push('/dashboard/withdraw');
+                        }}
                         className={`flex items-center gap-3 w-full bg-transparent hover:bg-[#1c1f26] text-[#a9b0c0] hover:text-white px-4 py-2.5 rounded-lg font-semibold text-sm transition-all border border-[#1c1f26] hover:border-[#2a2f3a] ${isCollapsed ? 'justify-center px-0' : ''}`}
                     >
                         <div className="w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center text-xs shrink-0">
@@ -136,15 +165,18 @@ export function DashboardSidebar({ sidebarOpen, toggleSidebar, user, isCollapsed
                 </div>
             </div>
 
-            <div className={`p-4 border-t border-[#1c1f26] Transition-all ${isCollapsed ? 'items-center px-0' : ''}`}>
+            <div className={`p-4 border-t border-[#1c1f26] ${isCollapsed ? 'items-center px-0' : ''}`}>
                 <div className={`flex items-center gap-3 bg-[#16191e] p-2 rounded-lg border border-[#1c1f26] ${isCollapsed ? 'justify-center border-none bg-transparent' : ''}`}>
                     <div className="w-8 h-8 rounded-full bg-[#00FFA3]/10 border border-[#00FFA3]/20 flex items-center justify-center shrink-0">
                         <span className="text-[#00FFA3] text-[10px] font-bold">{user?.kycStatus === 'VERIFIED' ? 'Pro' : 'User'}</span>
                     </div>
                     {!isCollapsed && (
-                        <div className="overflow-hidden">
+                        <div className="flex-1 overflow-hidden">
                             <div className="text-white text-xs font-bold truncate">{user ? `${user.firstName} ${user.lastName}` : 'Real Account'}</div>
-                            <div className="text-[#636c7a] text-[10px] truncate">{user?.email || 'verified user'}</div>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                                <div className={`w-1.5 h-1.5 rounded-full ${user?.kycStatus === 'VERIFIED' ? 'bg-[#00FFA3]' : user?.kycStatus === 'PENDING' ? 'bg-orange-500' : 'bg-red-500'}`} />
+                                <div className="text-[#636c7a] text-[9px] font-bold uppercase tracking-wider">KYC: {user?.kycStatus || 'UNVERIFIED'}</div>
+                            </div>
                         </div>
                     )}
                 </div>

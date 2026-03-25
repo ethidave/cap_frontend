@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import {
     Search,
     Filter,
@@ -28,6 +29,7 @@ import { api } from "@/lib/api";
 import { useToast } from "@/components/ToastProvider";
 
 export default function UserManagement() {
+    const router = useRouter();
     const { toast, confirm } = useToast();
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
@@ -298,6 +300,9 @@ export default function UserManagement() {
                                             )}
                                             <button onClick={() => handleForgotPassword(user.email)} title="Send Reset Password Code" className="p-2 rounded-lg bg-white/[0.03] text-indigo-400 hover:text-indigo-300 transition-colors">
                                                 <Smartphone className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={() => router.push(`/admin/trades?userId=${user.id}`)} title="Trade Control" className="p-2 rounded-lg bg-white/[0.03] text-emerald-400 hover:text-emerald-300 transition-colors">
+                                                <TrendingUp className="w-4 h-4" />
                                             </button>
                                             <button onClick={() => impersonate(user.id)} title="Login as user" className="p-2 rounded-lg bg-white/[0.03] text-slate-400 hover:text-white transition-colors">
                                                 <LogIn className="w-4 h-4" />

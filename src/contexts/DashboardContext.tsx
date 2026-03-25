@@ -120,6 +120,15 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         };
     }, []);
 
+    const toggleAccountType = async () => {
+        try {
+            await api.patch("/auth/account-mode", {});
+            window.location.reload();
+        } catch (error) {
+            console.error("Failed to toggle account type:", error);
+        }
+    };
+
     return (
         <DashboardContext.Provider value={{
             sidebarOpen,
@@ -136,7 +145,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
             isLoading,
             maintenanceTime,
             selectedSymbol,
-            setSelectedSymbol
+            setSelectedSymbol,
+            toggleAccountType
         }}>
             {children}
         </DashboardContext.Provider>

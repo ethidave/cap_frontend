@@ -1,6 +1,42 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // @ts-ignore
+  allowedDevOrigins: ["*.ngrok-free.app", "*.ngrok.io", "localhost:3000"],
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: '217.76.48.136',
+          },
+        ],
+        permanent: true,
+        destination: 'https://captradepro.com/:path*',
+      },
+      {
+         source: '/:path*',
+         has: [
+           {
+             type: 'host',
+             value: '217.76.48.136:3000',
+           },
+         ],
+         permanent: true,
+         destination: 'https://captradepro.com/:path*',
+      }
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://api.captradepro.com/api/:path*',
+      },
+    ];
+  },
   async headers() {
     return [
       {
@@ -20,7 +56,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()', // Tighten as needed
+            value: 'camera=(self), microphone=(), geolocation=()', // Enable camera for KYC
           },
           {
             key: 'Strict-Transport-Security',
