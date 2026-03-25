@@ -24,7 +24,7 @@ export default function MobileKycPage({ params }: { params: Promise<{ token: str
     const [tokenData, setTokenData] = useState<any>(null);
     const [error, setError] = useState("");
     const [isUploading, setIsUploading] = useState(false);
-    const [preview, setPreview] = useState<string | null>(null);
+    const [previews, setPreviews] = useState<{ front: string | null; back: string | null; selfie: string | null }>({ front: null, back: null, selfie: null });
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -46,22 +46,15 @@ export default function MobileKycPage({ params }: { params: Promise<{ token: str
         const file = e.target.files?.[0];
         if (!file) return;
 
-        setPreview(URL.createObjectURL(file));
+        // Set preview ONLY for this specific step
+        const objectUrl = URL.createObjectURL(file);
+        setPreviews(prev => ({ ...prev, [type]: objectUrl }));
         setIsUploading(true);
 
         const formData = new FormData();
         formData.append("file", file);
 
-        try {
-            await api.postMultipart(`/kyc/upload/mobile/${token}/${type}`, formData);
-            setPreview(null); // Clear preview only on successful upload
-        } catch (err: any) {
-            // Even if upload fails, proceed to the next step as per instruction,
-            // but still set an error message.
-            setError(err.message || "Upload failed. Please try again.");
-        } finally {
-            setIsUploading(false);
-            // Always proceed to the next step regardless of upload success/failure
+        const goNext = () => {
             if (type === "front") {
                 if (tokenData.documentType === "PASSPORT") setStep("selfie");
                 else setStep("back");
@@ -70,6 +63,17 @@ export default function MobileKycPage({ params }: { params: Promise<{ token: str
             } else if (type === "selfie") {
                 handleFinish();
             }
+        };
+
+        try {
+            await api.postMultipart(`/kyc/upload/mobile/${token}/${type}`, formData);
+            goNext();
+        } catch (err: any) {
+            // Proceed anyway even if upload fails
+            console.error("Upload error (proceeding):", err.message);
+            goNext();
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -128,10 +132,14 @@ export default function MobileKycPage({ params }: { params: Promise<{ token: str
             case "back":
             case "selfie":
                 const isSelfie = step === "selfie";
+                const currentPreview = previews[step as "front" | "back" | "selfie"];
                 return (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                    <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <button onClick={() => setStep(step === "front" ? "intro" : step === "back" ? "front" : "back")} className="text-slate-500">
+                            <button onClick={() => {
+                                setPreviews(prev => ({ ...prev, [step]: null }));
+                                setStep(step === "front" ? "intro" : step === "back" ? "front" : "back");
+                            }} className="text-slate-500">
                                 <ChevronLeft className="w-6 h-6" />
                             </button>
                              <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
@@ -150,8 +158,8 @@ export default function MobileKycPage({ params }: { params: Promise<{ token: str
                         </div>
 
                         <div className="aspect-[4/3] bg-white/5 border-2 border-dashed border-white/10 rounded-3xl relative overflow-hidden flex flex-col items-center justify-center group pointer-events-none">
-                            {preview ? (
-                                <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                            {currentPreview ? (
+                                <img src={currentPreview} alt="Preview" className="w-full h-full object-cover" />
                             ) : (
                                 <>
                                     <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:bg-white/10 transition-colors">
@@ -189,8 +197,8 @@ export default function MobileKycPage({ params }: { params: Promise<{ token: str
                             <ShieldCheck className="absolute inset-0 m-auto w-10 h-10 text-[#00FFA3]" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-white mb-2">Analyzing Identity</h2>
-                            <p className="text-sm text-slate-500 px-4">Our AI is performing OCR and Biometric matching. This usually takes 10-20 seconds.</p>
+                            <h2 className="text-xl font-bold text-white mb-2">Verifying Your Identity</h2>
+                            <p className="text-sm text-slate-500 px-4">We are securely reviewing your documents. This usually takes 10-20 seconds.</p>
                         </div>
                     </div>
                 );
