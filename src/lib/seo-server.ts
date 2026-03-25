@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const BACKEND_URL = "http://localhost:3001/api";
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : "https://api.captradepro.com/api";
 
 export async function getSeoMetadata(page: string): Promise<Metadata> {
     try {

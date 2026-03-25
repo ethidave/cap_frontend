@@ -21,7 +21,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
                 return null;
             }
 
-            const backendUrl = "http://localhost:3001";
+            const backendUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "https://api.captradepro.com";
             const newSocket = io(`${backendUrl}/notifications`, {
                 auth: { token },
                 transports: ['polling', 'websocket'],
