@@ -54,7 +54,14 @@ export default function MobileKycPage({ params }: { params: Promise<{ token: str
 
         try {
             await api.postMultipart(`/kyc/upload/mobile/${token}/${type}`, formData);
-            
+            setPreview(null); // Clear preview only on successful upload
+        } catch (err: any) {
+            // Even if upload fails, proceed to the next step as per instruction,
+            // but still set an error message.
+            setError(err.message || "Upload failed. Please try again.");
+        } finally {
+            setIsUploading(false);
+            // Always proceed to the next step regardless of upload success/failure
             if (type === "front") {
                 if (tokenData.documentType === "PASSPORT") setStep("selfie");
                 else setStep("back");
@@ -63,11 +70,6 @@ export default function MobileKycPage({ params }: { params: Promise<{ token: str
             } else if (type === "selfie") {
                 handleFinish();
             }
-            setPreview(null);
-        } catch (err: any) {
-            setError(err.message || "Upload failed. Please try again.");
-        } finally {
-            setIsUploading(false);
         }
     };
 
@@ -172,8 +174,7 @@ export default function MobileKycPage({ params }: { params: Promise<{ token: str
                         <input 
                             type="file" 
                             ref={fileInputRef} 
-                            accept="image/*" 
-                            capture={isSelfie ? "user" : "environment"}
+                            accept="image/*"
                             onChange={(e) => handleFileUpload(e, step as any)} 
                             className="hidden" 
                         />
