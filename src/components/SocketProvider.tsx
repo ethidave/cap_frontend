@@ -20,8 +20,8 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
                 return null;
             }
 
-            // Explicitly connect to the backend server domain to prevent connection refused on the frontend domain
-            const backendUrl = "https://api.captradepro.com/notifications";
+            // Explicitly connect to the correct backend server domain (the main domain is reverse proxying socket.io)
+            const backendUrl = "https://captradepro.com/notifications";
             const newSocket = io(backendUrl, {
                 auth: { token },
                 transports: ['polling', 'websocket'],
