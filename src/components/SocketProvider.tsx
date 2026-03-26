@@ -17,25 +17,20 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         const connectSocket = () => {
             const token = localStorage.getItem(tokenKey);
             if (!token) {
-                console.warn('⚠️ No socket token found, skipping connection');
                 return null;
             }
 
-            const backendUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "https://api.captradepro.com";
-            const newSocket = io(`${backendUrl}/notifications`, {
+            // Explicitly connect to the backend server domain to prevent connection refused on the frontend domain
+            const backendUrl = "https://api.captradepro.com/notifications";
+            const newSocket = io(backendUrl, {
                 auth: { token },
                 transports: ['polling', 'websocket'],
                 reconnectionAttempts: 5,
                 timeout: 10000,
             });
 
-            newSocket.on('connect', () => {
-                console.log('✅ Notification Socket Connected');
-            });
-
-            newSocket.on('connect_error', (err) => {
-                console.error('❌ Socket connection error:', err.message);
-            });
+            // Empty error handler to suppress noise from our app code
+            newSocket.on('connect_error', () => {});
 
             setSocket(newSocket);
             return newSocket;
